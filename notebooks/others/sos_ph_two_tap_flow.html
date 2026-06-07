@@ -1,0 +1,334 @@
+
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.phone{width:280px;margin:1.5rem auto;background:#111;border-radius:36px;padding:12px;border:2px solid #2a2a2a;}
+.screen{background:#0a0a0a;border-radius:26px;overflow:hidden;display:flex;flex-direction:column;min-height:600px;}
+.status-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 18px 4px;font-size:11px;color:#fff;font-weight:500;}
+.app-header{text-align:center;padding:6px 0 2px;}
+.app-title{font-size:10px;letter-spacing:3px;color:#444;}
+.main-area{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 14px 0;}
+.sos-ring-outer{width:148px;height:148px;border-radius:50%;background:rgba(220,38,38,0.10);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:14px;transition:background 0.2s;}
+.sos-ring-outer.armed{background:rgba(220,38,38,0.20);animation:pulse-ring 0.8s ease-in-out infinite;}
+@keyframes pulse-ring{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,0.35);}50%{box-shadow:0 0 0 12px rgba(220,38,38,0);}}
+.sos-ring-inner{width:118px;height:118px;border-radius:50%;background:rgba(220,38,38,0.15);display:flex;align-items:center;justify-content:center;}
+.sos-btn{width:92px;height:92px;border-radius:50%;background:#dc2626;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:transform 0.12s,background 0.15s;user-select:none;-webkit-tap-highlight-color:transparent;}
+.sos-btn:active{transform:scale(0.93);}
+.sos-btn.armed{background:#b91c1c;}
+.sos-btn.calling{background:#16a34a;}
+.sos-btn-label{font-size:24px;font-weight:700;color:#fff;letter-spacing:2px;line-height:1;}
+.sos-btn-sub{font-size:8px;color:rgba(255,255,255,0.6);letter-spacing:1px;}
+.progress-svg{position:absolute;top:0;left:0;width:148px;height:148px;transform:rotate(-90deg);pointer-events:none;}
+.progress-circle{fill:none;stroke:#dc2626;stroke-width:3;stroke-linecap:round;stroke-dasharray:435;stroke-dashoffset:435;transition:stroke-dashoffset 0.05s linear;}
+.instruction{font-size:10px;color:#555;text-align:center;line-height:1.6;min-height:28px;margin-bottom:10px;transition:color 0.2s;padding:0 4px;}
+.instruction.active{color:#ef4444;}
+.instruction.success{color:#22c55e;}
+.service-label{font-size:9px;color:#444;letter-spacing:2px;text-align:center;margin-bottom:7px;}
+.service-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%;}
+.svc-btn{background:#161616;border:1px solid #222;border-radius:10px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:background 0.15s,border-color 0.15s;-webkit-tap-highlight-color:transparent;}
+.svc-btn:hover{background:#1e1e1e;border-color:#303030;}
+.svc-btn.active{background:#1a2130;border-color:#2a3f60;}
+.svc-icon{font-size:17px;}
+.svc-name{font-size:8px;color:#555;letter-spacing:0.5px;}
+.svc-num{font-size:9px;color:#777;font-weight:500;}
+.svc-btn.active .svc-name{color:#7aacda;}
+.svc-btn.active .svc-num{color:#60a5fa;}
+.divider{width:100%;height:1px;background:#1a1a1a;margin:12px 0 10px;}
+.other-btn{width:100%;background:#141414;border:1px solid #222;border-radius:12px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background 0.15s,border-color 0.15s;-webkit-tap-highlight-color:transparent;margin-bottom:14px;}
+.other-btn:hover{background:#1c1c1c;border-color:#2e2e2e;}
+.other-btn:active{transform:scale(0.98);}
+.other-btn-left{display:flex;align-items:center;gap:10px;}
+.other-btn-icon{width:32px;height:32px;border-radius:8px;background:#1e1e1e;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.other-btn-text{display:flex;flex-direction:column;gap:2px;}
+.other-btn-title{font-size:12px;color:#ccc;font-weight:500;}
+.other-btn-sub{font-size:9px;color:#555;}
+.other-panel{width:100%;background:#0f0f0f;border:1px solid #1e1e1e;border-radius:12px;overflow:hidden;margin-bottom:14px;}
+.other-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #181818;cursor:pointer;transition:background 0.12s;-webkit-tap-highlight-color:transparent;}
+.other-row:last-child{border-bottom:none;}
+.other-row:hover{background:#161616;}
+.other-row:active{background:#1e1e1e;}
+.other-row-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.other-row-text{flex:1;}
+.other-row-title{font-size:11px;color:#bbb;font-weight:500;}
+.other-row-desc{font-size:9px;color:#505050;margin-top:1px;}
+.other-row-num{font-size:10px;color:#4a7ab5;font-weight:500;white-space:nowrap;}
+.chevron{font-size:12px;color:#333;}
+.calling-screen{display:none;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px;gap:12px;}
+.calling-screen.visible{display:flex;}
+.calling-badge{background:#16a34a;border-radius:24px;padding:5px 18px;font-size:10px;letter-spacing:2px;color:#fff;}
+.calling-number{font-size:28px;font-weight:300;color:#fff;letter-spacing:4px;}
+.calling-svc{font-size:11px;color:#9ca3af;}
+.timer-display{font-size:22px;font-weight:500;color:#22c55e;font-variant-numeric:tabular-nums;letter-spacing:2px;}
+.end-btn{width:56px;height:56px;border-radius:50%;background:#dc2626;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:8px;font-size:20px;color:#fff;}
+.location-pill{background:#161616;border:1px solid #222;border-radius:20px;padding:5px 12px;font-size:10px;color:#6b7280;display:flex;align-items:center;gap:6px;}
+.dot-live{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 1s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+</style>
+
+<h2 class="sr-only">SOS emergency app Philippines — with Bantay Bata and other non-emergency hotlines</h2>
+
+<div class="phone">
+  <div class="screen">
+
+    <div class="status-bar">
+      <span>9:41</span>
+      <span style="font-size:10px;letter-spacing:1px;color:#ef4444;font-weight:600;">SOS</span>
+      <span style="display:flex;gap:4px;align-items:center;">
+        <i class="ti ti-wifi" aria-hidden="true" style="font-size:12px;color:#fff;"></i>
+        <i class="ti ti-battery" aria-hidden="true" style="font-size:12px;color:#fff;"></i>
+      </span>
+    </div>
+
+    <div id="mainView" style="display:flex;flex-direction:column;flex:1;">
+      <div class="app-header"><div class="app-title">EMERGENCY · PH</div></div>
+
+      <div class="main-area">
+        <div class="sos-ring-outer" id="ringOuter">
+          <svg class="progress-svg" viewBox="0 0 148 148" aria-hidden="true">
+            <circle class="progress-circle" id="progressCircle" cx="74" cy="74" r="69"/>
+          </svg>
+          <div class="sos-ring-inner">
+            <button class="sos-btn" id="sosBtn"
+              aria-label="SOS button — hold to arm, tap again to call"
+              onmousedown="startArm()" ontouchstart="startArm()"
+              onmouseup="releaseArm()" ontouchend="releaseArm()"
+              onmouseleave="cancelArm()">
+              <span class="sos-btn-label" id="btnLabel">SOS</span>
+              <span class="sos-btn-sub" id="btnSub">HOLD</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="instruction" id="instruction">Hold to arm · Tap again to confirm</div>
+
+        <div class="service-label">SELECT SERVICE</div>
+        <div class="service-grid">
+          <button class="svc-btn active" id="svc-police" onclick="selectService('police','911','PNP Hotline','Police','🚔')" aria-pressed="true">
+            <span class="svc-icon">🚔</span><span class="svc-name">POLICE</span><span class="svc-num">911</span>
+          </button>
+          <button class="svc-btn" id="svc-fire" onclick="selectService('fire','911','BFP Fire Dept','Fire','🚒')" aria-pressed="false">
+            <span class="svc-icon">🚒</span><span class="svc-name">FIRE</span><span class="svc-num">911</span>
+          </button>
+          <button class="svc-btn" id="svc-medical" onclick="selectService('medical','911','ERMAT Ambulance','Medical','🚑')" aria-pressed="false">
+            <span class="svc-icon">🚑</span><span class="svc-name">MEDICAL</span><span class="svc-num">911</span>
+          </button>
+          <button class="svc-btn" id="svc-rescue" onclick="selectService('rescue','911','NDRRMC Rescue','Rescue','🪖')" aria-pressed="false">
+            <span class="svc-icon">🪖</span><span class="svc-name">RESCUE</span><span class="svc-num">911</span>
+          </button>
+          <button class="svc-btn" id="svc-nbi" onclick="selectService('nbi','8523-8231','NBI Hotline','NBI','🔍')" aria-pressed="false">
+            <span class="svc-icon">🔍</span><span class="svc-name">NBI</span><span class="svc-num">8523-8231</span>
+          </button>
+          <button class="svc-btn" id="svc-crisis" onclick="selectService('crisis','1553','Crisis Line PH','Crisis','🫂')" aria-pressed="false">
+            <span class="svc-icon">🫂</span><span class="svc-name">CRISIS</span><span class="svc-num">1553</span>
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="other-btn" id="otherToggle" onclick="toggleOther()" aria-expanded="false">
+          <div class="other-btn-left">
+            <div class="other-btn-icon">
+              <i class="ti ti-phone" aria-hidden="true" style="font-size:15px;color:#888;"></i>
+            </div>
+            <div class="other-btn-text">
+              <span class="other-btn-title">Other concerns</span>
+              <span class="other-btn-sub">Non-emergency hotlines</span>
+            </div>
+          </div>
+          <i class="ti ti-chevron-down" aria-hidden="true" id="otherChevron" style="font-size:14px;color:#444;transition:transform 0.2s;"></i>
+        </button>
+
+        <div class="other-panel" id="otherPanel" style="display:none;">
+
+          <div class="other-row" onclick="dialOther('163','Bantay Bata 163','Child abuse & welfare')">
+            <div class="other-row-icon" style="background:#2a1a20;">
+              <i class="ti ti-mood-smile" aria-hidden="true" style="font-size:13px;color:#e07a9a;"></i>
+            </div>
+            <div class="other-row-text">
+              <div class="other-row-title">Bantay Bata — Child welfare</div>
+              <div class="other-row-desc">Child abuse, neglect, missing children</div>
+            </div>
+            <span class="other-row-num">163</span>
+            <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+          </div>
+
+          <div class="other-row" onclick="dialOther('8888','ARTA 8888','Gov\'t complaints')">
+            <div class="other-row-icon" style="background:#1a1f2e;">
+              <i class="ti ti-building" aria-hidden="true" style="font-size:13px;color:#5a8fd4;"></i>
+            </div>
+            <div class="other-row-text">
+              <div class="other-row-title">ARTA — Gov't complaints</div>
+              <div class="other-row-desc">Anti-red tape, public service concerns</div>
+            </div>
+            <span class="other-row-num">8888</span>
+            <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+          </div>
+
+          <div class="other-row" onclick="dialOther('8525-8080','DSWD Hotline','Social welfare')">
+            <div class="other-row-icon" style="background:#1a2a1a;">
+              <i class="ti ti-heart" aria-hidden="true" style="font-size:13px;color:#5aad5a;"></i>
+            </div>
+            <div class="other-row-text">
+              <div class="other-row-title">DSWD — Social welfare</div>
+              <div class="other-row-desc">Abuse, missing persons, welfare aid</div>
+            </div>
+            <span class="other-row-num">8525-8080</span>
+            <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+          </div>
+
+          <div class="other-row" onclick="dialOther('1362','DOH Health Hotline','Health advice')">
+            <div class="other-row-icon" style="background:#1f1a2a;">
+              <i class="ti ti-stethoscope" aria-hidden="true" style="font-size:13px;color:#9b7ad4;"></i>
+            </div>
+            <div class="other-row-text">
+              <div class="other-row-title">DOH — Health advice</div>
+              <div class="other-row-desc">Medical questions, health complaints</div>
+            </div>
+            <span class="other-row-num">1362</span>
+            <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+          </div>
+
+          <div class="other-row" onclick="dialOther('16211','Meralco Hotline','Power outage')">
+            <div class="other-row-icon" style="background:#2a2010;">
+              <i class="ti ti-bolt" aria-hidden="true" style="font-size:13px;color:#d4a040;"></i>
+            </div>
+            <div class="other-row-text">
+              <div class="other-row-title">Meralco — Power outage</div>
+              <div class="other-row-desc">Electrical hazards, outage reports</div>
+            </div>
+            <span class="other-row-num">16211</span>
+            <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+          </div>
+
+          <div class="other-row" onclick="dialOther('136','MMDA Hotline','Road & traffic')">
+            <div class="other-row-icon" style="background:#1a2020;">
+              <i class="ti ti-road" aria-hidden="true" style="font-size:13px;color:#40a4a4;"></i>
+            </div>
+            <div class="other-row-text">
+              <div class="other-row-title">MMDA — Road & traffic</div>
+              <div class="other-row-desc">Road hazards, flood warnings, accidents</div>
+            </div>
+            <span class="other-row-num">136</span>
+            <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="calling-screen" id="callingView" role="status" aria-live="polite">
+      <div class="calling-badge">CALLING</div>
+      <div style="font-size:34px;" id="callingIcon">🚔</div>
+      <div class="calling-number" id="callingNumber">9 1 1</div>
+      <div class="calling-svc" id="callingSvc">PNP Hotline · Police</div>
+      <div class="timer-display" id="timerDisplay">00:00</div>
+      <div class="location-pill">
+        <div class="dot-live"></div>
+        <span>Sharing live location</span>
+      </div>
+      <button class="end-btn" onclick="endCall()" aria-label="End call">
+        <i class="ti ti-phone-off" aria-hidden="true"></i>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const CIRC=435,HOLD_MS=1000,STEP_MS=40;
+let armed=false,armProgress=0,progressInterval=null,callTimer=null,callSeconds=0;
+let sel={id:'police',number:'911',agency:'PNP Hotline',name:'Police',icon:'🚔'};
+let otherOpen=false;
+
+const btn=document.getElementById('sosBtn');
+const ring=document.getElementById('ringOuter');
+const circle=document.getElementById('progressCircle');
+const instr=document.getElementById('instruction');
+const btnLabel=document.getElementById('btnLabel');
+const btnSub=document.getElementById('btnSub');
+
+function selectService(id,number,agency,name,icon){
+  document.querySelectorAll('.svc-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false');});
+  const el=document.getElementById('svc-'+id);
+  if(el){el.classList.add('active');el.setAttribute('aria-pressed','true');}
+  sel={id,number,agency,name,icon};
+  resetArm();
+}
+
+function toggleOther(){
+  otherOpen=!otherOpen;
+  document.getElementById('otherPanel').style.display=otherOpen?'block':'none';
+  document.getElementById('otherChevron').style.transform=otherOpen?'rotate(180deg)':'rotate(0deg)';
+  document.getElementById('otherToggle').setAttribute('aria-expanded',String(otherOpen));
+}
+
+function dialOther(number,agency,name){
+  document.getElementById('callingIcon').textContent='📞';
+  document.getElementById('callingNumber').textContent=number.split('').join(' ');
+  document.getElementById('callingSvc').textContent=agency+' · '+name;
+  document.getElementById('mainView').style.display='none';
+  const cv=document.getElementById('callingView');
+  cv.style.display='flex';cv.classList.add('visible');
+  callSeconds=0;
+  callTimer=setInterval(()=>{
+    callSeconds++;
+    const m=String(Math.floor(callSeconds/60)).padStart(2,'0');
+    const s=String(callSeconds%60).padStart(2,'0');
+    document.getElementById('timerDisplay').textContent=m+':'+s;
+  },1000);
+}
+
+function startArm(){
+  if(armed){triggerCall();return;}
+  armProgress=0;
+  progressInterval=setInterval(()=>{
+    armProgress+=STEP_MS;
+    circle.style.strokeDashoffset=Math.max(0,CIRC-(CIRC*(armProgress/HOLD_MS)));
+    if(armProgress>=HOLD_MS)armFull();
+  },STEP_MS);
+}
+function armFull(){
+  clearInterval(progressInterval);armed=true;
+  circle.style.strokeDashoffset='0';
+  ring.classList.add('armed');btn.classList.add('armed');
+  btnLabel.textContent='SOS';btnSub.textContent='TAP';
+  instr.textContent='Armed — tap to call '+sel.name;
+  instr.className='instruction active';
+}
+function releaseArm(){if(armed)return;clearInterval(progressInterval);if(armProgress<HOLD_MS)resetArm();}
+function cancelArm(){if(!armed){clearInterval(progressInterval);resetArm();}}
+function resetArm(){
+  armed=false;armProgress=0;clearInterval(progressInterval);
+  circle.style.strokeDashoffset=CIRC;
+  ring.classList.remove('armed');btn.classList.remove('armed','calling');
+  btnLabel.textContent='SOS';btnSub.textContent='HOLD';
+  instr.textContent='Hold to arm · Tap again to confirm';
+  instr.className='instruction';
+}
+function triggerCall(){
+  armed=false;ring.classList.remove('armed');btn.classList.remove('armed');btn.classList.add('calling');
+  instr.textContent='Calling '+sel.agency+'...';instr.className='instruction success';
+  setTimeout(()=>{
+    document.getElementById('mainView').style.display='none';
+    document.getElementById('callingIcon').textContent=sel.icon;
+    document.getElementById('callingNumber').textContent=sel.number.split('').join(' ');
+    document.getElementById('callingSvc').textContent=sel.agency+' · '+sel.name;
+    const cv=document.getElementById('callingView');
+    cv.style.display='flex';cv.classList.add('visible');
+    callSeconds=0;
+    callTimer=setInterval(()=>{
+      callSeconds++;
+      const m=String(Math.floor(callSeconds/60)).padStart(2,'0');
+      const s=String(callSeconds%60).padStart(2,'0');
+      document.getElementById('timerDisplay').textContent=m+':'+s;
+    },1000);
+  },350);
+}
+function endCall(){
+  clearInterval(callTimer);
+  const cv=document.getElementById('callingView');
+  cv.classList.remove('visible');cv.style.display='none';
+  document.getElementById('mainView').style.display='flex';
+  resetArm();
+}
+</script>
